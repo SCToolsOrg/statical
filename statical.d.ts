@@ -56,6 +56,8 @@ declare global {
     [key in keyof T]: T[key] extends Chart ? T[key] : never;
   };
 
+  var dates: number[];
+  var DPMS: number;
   var index: number;
   var pastIndex: number;
   var charts: {

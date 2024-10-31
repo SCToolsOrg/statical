@@ -1,20 +1,29 @@
 {
-  "name": "statical",
-  "version": "1.0.0",
+  "name": "@sctools/statical",
+  "description": "A high-level stats video framework built on top of D3.js.",
+  "version": "0.0.1",
   "main": "statical.js",
   "types": "./statical.d.ts",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "keywords": [
+    "d3",
+    "data",
+    "visualization",
+    "visualizations",
+    "visualize",
+    "visualizing",
+    "stats",
+    "statistics"
+  ],
+  "author": "SCTools",
+  "contributors": [
+    "ToastedToast <hey@toasted.dev> (https://toasted.dev)",
+    "GNZGUY"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "d3": "^6.0.0"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
-  "dependencies": {},
   "devDependencies": {
     "@types/d3": "^6.0.0"
-  },
-  "peerDependencies": {
-    "d3": "^6.0.0"
   }
 }

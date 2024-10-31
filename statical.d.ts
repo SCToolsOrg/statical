@@ -35,6 +35,10 @@ declare global {
   }
   interface Line {
     base?: Selection;
+    data?: {
+      date: number;
+      count: number;
+    }[];
     color: string;
     style?: {
       strokeWidth?: number;

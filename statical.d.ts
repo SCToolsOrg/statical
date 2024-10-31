@@ -34,7 +34,7 @@ declare global {
     avatarSize?: number;
   }
   interface Line {
-    base?: Selection;
+    base?: Selection<SVGPathElement, any, null, undefined>;
     data?: {
       date: number;
       count: number;
@@ -46,8 +46,8 @@ declare global {
     };
   }
   interface Avatar {
-    base?: Selection;
-    group?: Selection;
+    base?: Selection<SVGImageElement, any, null, undefined>;
+    group?: Selection<SVGGElement, any, null, undefined>;
     type?: "circle" | "square";
     url: string;
   }
@@ -64,12 +64,22 @@ declare global {
     startIndex?: number;
     interval?: number;
     limit?: number;
-    [key: string]: Chart;
-  };
+  } & Record<string, Chart>;
   var valueTypes: Record<string, ValueType>;
 
+  /**
+   * Smoothly animate a value from `start` to `end`
+   * @param {string | HTMLElement} element The element to animate the text of
+   * @param {number} start The starting value
+   * @param {number} end The ending value
+   * @param {Object} options
+   * @param {string} options.type The type of value to animate
+   * @param {string} options.prefix The prefix to add to the value
+   * @param {string} options.suffix The suffix to add to the value
+   * @param {number} options.duration The duration of the animation in milliseconds
+   */
   function animateValue(
-    element: HTMLElement,
+    element: string | HTMLElement,
     start: number,
     end: number,
     options?: {
@@ -79,19 +89,52 @@ declare global {
       duration?: number;
     }
   ): void;
+
+  /**
+   * Abbreviate a number to a shorter string
+   * @example abbreviate(123456789) => "123M"
+   * @param {string} count The number to abbreviate
+   * @param {number?} digits The number of digits to keep
+   * @returns {string} The abbreviated string
+   */
+  function abbreviate(count: number, digits?: number): string;
+
+  /**
+   * Updates a chart's lines and avatars
+   * @param {string} chart The chart to update
+   * @param {number | number[]} newCounts The new counts to add to the chart
+   */
   function updateChart(
     chart: Charts<typeof charts>,
     newCounts: number | number[]
   ): void;
+
+  /**
+   * Calculate a bar's width
+   * @param {number} count This bar's count
+   * @param {number} firstCount The first bar's count
+   * @param {number} maxWidth The maximum width of the bar
+   * @returns {number} The width of the bar
+   */
   function calculateBarWidth(
     count: number,
     firstCount: number,
     maxWidth: number
   ): number;
-  function abbreviate(count: number, digits?: number): string;
 
-  function getText(id: string): string;
-  function changeText(id: string, value: string): void;
+  /**
+   * Get the `textContent` of an element
+   * @param {string | HTMLElement} element The element to get the `textContent` of
+   * @returns {string} The text content of the element
+   */
+  function getText(element: string | HTMLElement): string;
+
+  /**
+   * Change the `textContent` of an element
+   * @param {string | HTMLElement} element The element to change the `textContent` of
+   * @param {string} text The new text content
+   */
+  function changeText(element: string | HTMLElement, text: string): void;
 
   function update(): void;
   function animateCharts(): void;

@@ -1,157 +1,27 @@
 var index = 0;
 var pastIndex = index === 0 ? 0 : index - 1;
 
-function getText(id) {
-  return document
-    .getElementById(id)
-    .textContent.replaceAll(",", "")
-    .replaceAll("+", "");
-}
+// #region Number utilities
 
-function updateChart(key, newCounts) {
-  if (
-    Array.isArray(charts[key].lines) &&
-    Array.isArray(newCounts) &&
-    newCounts.length === charts[key].lines.length
-  ) {
-    for (let i = 0; i < newCounts.length; i++) {
-      charts[key].lines[i].data.push({
-        date: parseFloat(getText("date-value")),
-        count: parseFloat(newCounts[i]),
-      });
-      if (index - charts.startIndex > (charts[key].limit ?? charts.limit)) {
-        charts[key].lines[i].data.shift();
-      }
-    }
-
-    let axisValues = {
-      xMin: Math.min(...charts[key].lines.map((c) => c.data[0].date)),
-      xMax: Math.max(...charts[key].lines.map((c) => c.data.slice(-1)[0].date)),
-      yMin: Math.min(
-        ...charts[key].lines.map((c) => c.data.map((cc) => cc.count)).flat()
-      ),
-      yMax: Math.max(
-        ...charts[key].lines.map((c) => c.data.map((cc) => cc.count)).flat()
-      ),
-    };
-
-    charts[key].x.scale.domain([axisValues.xMin, axisValues.xMax]);
-    charts[key].y.scale.domain([axisValues.yMin - 1, axisValues.yMax + 2]);
-
-    charts[key].x.axis.call(d3.axisBottom(charts[key].x.scale).ticks(5));
-    charts[key].y.axis.call(
-      d3
-        .axisLeft(charts[key].y.scale)
-        .tickFormat((d) => {
-          return abbreviate(d);
-        })
-        .ticks(5)
-    );
-
-    for (let i = 0; i < charts[key].lines.length; i++) {
-      charts[key].lines[i].base
-        .datum(charts[key].lines[i].data)
-        .attr(
-          "d",
-          d3
-            .line()
-            .x(function (d) {
-              return charts[key].x.scale(d.date);
-            })
-            .y(function (d) {
-              return charts[key].y.scale(d.count);
-            })
-            .curve(d3.curveMonotoneX)
-        )
-        .style("opacity", charts[key].lines[i].style?.opacity ?? 1);
-
-      if (charts[key].avatars && charts[key].avatarSize) {
-        charts[key].avatars[i].base.attr(
-          "transform",
-          "translate(" +
-            (charts[key].style.width - 10) +
-            "," +
-            (charts[key].y.scale(charts[key].lines[i].data.slice(-1)[0].count) -
-              10) +
-            ")"
-        );
-      }
-    }
-  } else {
-    charts[key].lines.data.push({
-      date: parseFloat(getText("date-value")),
-      count: parseFloat(newCounts),
-    });
-    if (index - charts.startIndex > (charts[key].limit ?? charts.limit)) {
-      charts[key].lines.data.shift();
-    }
-
-    let axisValues = {
-      xMin: Math.min(...charts[key].lines.data.map((c) => c.date)),
-      xMax: Math.max(...charts[key].lines.data.map((c) => c.date)),
-      yMin: Math.min(...charts[key].lines.data.map((c) => c.count)),
-      yMax: Math.max(...charts[key].lines.data.map((c) => c.count)),
-    };
-
-    charts[key].x.scale.domain([axisValues.xMin, axisValues.xMax]);
-    charts[key].y.scale.domain([axisValues.yMin - 1, axisValues.yMax + 2]);
-
-    charts[key].x.axis.call(d3.axisBottom(charts[key].x.scale).ticks(5));
-    charts[key].y.axis.call(
-      d3
-        .axisLeft(charts[key].y.scale)
-        .tickFormat((d) => {
-          return abbreviate(d);
-        })
-        .ticks(5)
-    );
-
-    let lineData = charts[key].lines.data;
-    charts[key].lines.base
-      .datum(lineData)
-      .attr(
-        "d",
-        d3
-          .line()
-          .x(function (d) {
-            return charts[key].x.scale(d.date);
-          })
-          .y(function (d) {
-            return charts[key].y.scale(d.count);
-          })
-          .curve(d3.curveMonotoneX)
-      )
-      .style("opacity", charts[key].lines.style?.opacity ?? 1);
-
-    if (charts[key].avatars && charts[key].avatarSize) {
-      charts[key].avatars.base.attr(
-        "transform",
-        "translate(" +
-          (charts[key].style.width - 10) +
-          "," +
-          (charts[key].y.scale(charts[key].lines.data.slice(-1)[0].count) -
-            10) +
-          ")"
-      );
-    }
-  }
-}
-
-function calculateBarWidth(count, firstCount, maxWidth) {
-  return (count / firstCount) * maxWidth;
-}
-
-function changeText(id, text) {
-  document.getElementById(id).textContent = text;
-}
-
-function animateValue(el, start, end, options = {}) {
+/**
+ * Smoothly animate a value from `start` to `end`
+ * @param {string | HTMLElement} element The element to animate the text of
+ * @param {number} start The starting value
+ * @param {number} end The ending value
+ * @param {Object} options
+ * @param {string} options.type The type of value to animate
+ * @param {string} options.prefix The prefix to add to the value
+ * @param {string} options.suffix The suffix to add to the value
+ * @param {number} options.duration The duration of the animation in milliseconds
+ */
+function animateValue(element, start, end, options = {}) {
   const { type = "count", prefix = "", suffix = "", duration = DPMS } = options;
-  const obj = document.getElementById(el);
+  const obj =
+    typeof element === "string" ? document.getElementById(element) : element;
   let startTimestamp = null;
   const step = (timestamp) => {
     if (!startTimestamp) startTimestamp = timestamp;
-    const progress = Math.min((timestamp - startTimestamp) / DPMS, 1);
+    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
     const value = Math.floor(progress * (end - start) + start);
     const formattedValue = prefix + valueTypes[type](value, obj) + suffix;
     obj.innerHTML = formattedValue;
@@ -162,6 +32,13 @@ function animateValue(el, start, end, options = {}) {
   window.requestAnimationFrame(step);
 }
 
+/**
+ * Abbreviate a number to a shorter string
+ * @example abbreviate(123456789) => "123M"
+ * @param {string} count The number to abbreviate
+ * @param {number?} digits The number of digits to keep
+ * @returns {string} The abbreviated string
+ */
 function abbreviate(count, digits = 3) {
   function abbreviateStep1(value, digits) {
     if (digits == undefined) {
@@ -203,6 +80,186 @@ function abbreviate(count, digits = 3) {
     digits
   );
 }
+
+// #endregion
+
+// #region Chart utilities
+
+/**
+ * Updates a chart's lines and avatars
+ * @param {string} chart The chart to update
+ * @param {number | number[]} newCounts The new counts to add to the chart
+ */
+function updateChart(chart, newCounts) {
+  if (
+    Array.isArray(charts[chart].lines) &&
+    Array.isArray(newCounts) &&
+    newCounts.length === charts[chart].lines.length
+  ) {
+    for (let i = 0; i < newCounts.length; i++) {
+      charts[chart].lines[i].data.push({
+        date: parseFloat(getText("date-value")),
+        count: parseFloat(newCounts[i]),
+      });
+      if (index - charts.startIndex > (charts[chart].limit ?? charts.limit)) {
+        charts[chart].lines[i].data.shift();
+      }
+    }
+
+    let axisValues = {
+      xMin: Math.min(...charts[chart].lines.map((c) => c.data[0].date)),
+      xMax: Math.max(
+        ...charts[chart].lines.map((c) => c.data.slice(-1)[0].date)
+      ),
+      yMin: Math.min(
+        ...charts[chart].lines.map((c) => c.data.map((cc) => cc.count)).flat()
+      ),
+      yMax: Math.max(
+        ...charts[chart].lines.map((c) => c.data.map((cc) => cc.count)).flat()
+      ),
+    };
+
+    charts[chart].x.scale.domain([axisValues.xMin, axisValues.xMax]);
+    charts[chart].y.scale.domain([axisValues.yMin - 1, axisValues.yMax + 2]);
+
+    charts[chart].x.axis.call(d3.axisBottom(charts[chart].x.scale).ticks(5));
+    charts[chart].y.axis.call(
+      d3
+        .axisLeft(charts[chart].y.scale)
+        .tickFormat((d) => {
+          return abbreviate(d);
+        })
+        .ticks(5)
+    );
+
+    for (let i = 0; i < charts[chart].lines.length; i++) {
+      charts[chart].lines[i].base
+        .datum(charts[chart].lines[i].data)
+        .attr(
+          "d",
+          d3
+            .line()
+            .x(function (d) {
+              return charts[chart].x.scale(d.date);
+            })
+            .y(function (d) {
+              return charts[chart].y.scale(d.count);
+            })
+            .curve(d3.curveMonotoneX)
+        )
+        .style("opacity", charts[chart].lines[i].style?.opacity ?? 1);
+
+      if (charts[chart].avatars && charts[chart].avatarSize) {
+        charts[chart].avatars[i].base.attr(
+          "transform",
+          "translate(" +
+            (charts[chart].style.width - 10) +
+            "," +
+            (charts[chart].y.scale(
+              charts[chart].lines[i].data.slice(-1)[0].count
+            ) -
+              10) +
+            ")"
+        );
+      }
+    }
+  } else {
+    charts[chart].lines.data.push({
+      date: parseFloat(getText("date-value")),
+      count: parseFloat(newCounts),
+    });
+    if (index - charts.startIndex > (charts[chart].limit ?? charts.limit)) {
+      charts[chart].lines.data.shift();
+    }
+
+    let axisValues = {
+      xMin: Math.min(...charts[chart].lines.data.map((c) => c.date)),
+      xMax: Math.max(...charts[chart].lines.data.map((c) => c.date)),
+      yMin: Math.min(...charts[chart].lines.data.map((c) => c.count)),
+      yMax: Math.max(...charts[chart].lines.data.map((c) => c.count)),
+    };
+
+    charts[chart].x.scale.domain([axisValues.xMin, axisValues.xMax]);
+    charts[chart].y.scale.domain([axisValues.yMin - 1, axisValues.yMax + 2]);
+
+    charts[chart].x.axis.call(d3.axisBottom(charts[chart].x.scale).ticks(5));
+    charts[chart].y.axis.call(
+      d3
+        .axisLeft(charts[chart].y.scale)
+        .tickFormat((d) => {
+          return abbreviate(d);
+        })
+        .ticks(5)
+    );
+
+    let lineData = charts[chart].lines.data;
+    charts[chart].lines.base
+      .datum(lineData)
+      .attr(
+        "d",
+        d3
+          .line()
+          .x(function (d) {
+            return charts[chart].x.scale(d.date);
+          })
+          .y(function (d) {
+            return charts[chart].y.scale(d.count);
+          })
+          .curve(d3.curveMonotoneX)
+      )
+      .style("opacity", charts[chart].lines.style?.opacity ?? 1);
+
+    if (charts[chart].avatars && charts[chart].avatarSize) {
+      charts[chart].avatars.base.attr(
+        "transform",
+        "translate(" +
+          (charts[chart].style.width - 10) +
+          "," +
+          (charts[chart].y.scale(charts[chart].lines.data.slice(-1)[0].count) -
+            10) +
+          ")"
+      );
+    }
+  }
+}
+
+/**
+ * Calculate a bar's width
+ * @param {number} count This bar's count
+ * @param {number} firstCount The first bar's count
+ * @param {number} maxWidth The maximum width of the bar
+ * @returns {number} The width of the bar
+ */
+function calculateBarWidth(count, firstCount, maxWidth) {
+  return (count / firstCount) * maxWidth;
+}
+// #endregion
+
+// #region Text utilities
+
+/**
+ * Get the `textContent` of an element
+ * @param {string | HTMLElement} element The element to get the `textContent` of
+ * @returns {string} The text content of the element
+ */
+function getText(element) {
+  const obj =
+    typeof element === "string" ? document.getElementById(element) : element;
+  return obj.textContent.replaceAll(",", "").replaceAll("+", "");
+}
+
+/**
+ * Change the `textContent` of an element
+ * @param {string | HTMLElement} element The element to change the `textContent` of
+ * @param {string} text The new text content
+ */
+function changeText(element, text) {
+  const obj =
+    typeof element === "string" ? document.getElementById(element) : element;
+  obj.textContent = text;
+}
+
+// #endregion
 
 document.addEventListener("DOMContentLoaded", (w) => {
   function toId(str) {

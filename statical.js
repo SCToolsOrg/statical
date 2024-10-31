@@ -43,7 +43,7 @@ function updateChart(key, newCounts) {
       d3
         .axisLeft(charts[key].y.scale)
         .tickFormat((d) => {
-          return fullAbbreviate(d);
+          return abbreviate(d);
         })
         .ticks(5)
     );
@@ -101,7 +101,7 @@ function updateChart(key, newCounts) {
       d3
         .axisLeft(charts[key].y.scale)
         .tickFormat((d) => {
-          return fullAbbreviate(d);
+          return abbreviate(d);
         })
         .ticks(5)
     );
@@ -162,46 +162,46 @@ function animateValue(el, start, end, options = {}) {
   window.requestAnimationFrame(step);
 }
 
-function abbreviate(count, digits) {
-  if (digits == undefined) {
-    digits = 3;
-  }
-  if (count > 999 && count < 1_000_000_000) {
-    count = count.toString();
-    let first = count.slice(0, digits);
-    let rest = count.slice(digits);
-    let abb = new Array(rest.length).fill(0).join("");
-    return parseFloat(first + abb);
-  } else {
-    return count;
-  }
-}
-
-function abr(value, digits) {
-  if (digits == undefined) {
-    digits = 3;
-  }
-  if (parseFloat(value) > 999 || parseFloat(value) < -999) {
-    let newValue = value;
-    const suffixes = ["", "K", "M", "B", "T"];
-    let suffixNum = 0;
-    while (newValue >= 1000 || newValue <= -1000) {
-      newValue /= 1000;
-      suffixNum++;
+function abbreviate(count, digits = 3) {
+  function abbreviateStep1(value, digits) {
+    if (digits == undefined) {
+      digits = 3;
     }
-    newValue = newValue.toPrecision(digits);
-    newValue += suffixes[suffixNum];
-    return newValue;
-  } else {
-    return parseFloat(value);
+    if (parseFloat(value) > 999 || parseFloat(value) < -999) {
+      let newValue = value;
+      const suffixes = ["", "K", "M", "B", "T"];
+      let suffixNum = 0;
+      while (newValue >= 1000 || newValue <= -1000) {
+        newValue /= 1000;
+        suffixNum++;
+      }
+      newValue = newValue.toPrecision(digits);
+      newValue += suffixes[suffixNum];
+      return newValue;
+    } else {
+      return parseFloat(value);
+    }
   }
-}
 
-function fullAbbreviate(count, digits) {
-  if (digits == undefined) {
-    digits = 3;
+  function abbreviateStep2(count, digits) {
+    if (digits == undefined) {
+      digits = 3;
+    }
+    if (count > 999 && count < 1_000_000_000) {
+      count = count.toString();
+      let first = count.slice(0, digits);
+      let rest = count.slice(digits);
+      let abb = new Array(rest.length).fill(0).join("");
+      return parseFloat(first + abb);
+    } else {
+      return count;
+    }
   }
-  return abr(abbreviate(Math.floor(parseFloat(count)), digits), digits);
+
+  return abbreviateStep1(
+    abbreviateStep2(Math.floor(parseFloat(count)), digits),
+    digits
+  );
 }
 
 document.addEventListener("DOMContentLoaded", (w) => {

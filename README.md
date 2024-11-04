@@ -20,6 +20,8 @@ Or use a CDN such as [unpkg](https://unpkg.com):
 <script src="https://unpkg.com/@sctools/statical/statical.js"></script>
 ```
 
+Or [download it straight from the source](./statical.js).
+
 Then use it in HTML:
 
 ```html

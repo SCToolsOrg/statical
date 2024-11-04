@@ -2,7 +2,7 @@
   "name": "@sctools/statical",
   "description": "A high-level stats video framework built on top of D3.js.",
   "version": "0.0.1",
-  "main": "statical.js",
+  "browser": "statical.js",
   "types": "./statical.d.ts",
   "keywords": [
     "d3",
@@ -20,6 +20,17 @@
     "GNZGUY"
   ],
   "license": "MIT",
+  "homepage": "https://github.com/SCToolsOrg/statical#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SCToolsOrg/statical.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SCToolsOrg/statical/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "d3": "^6.0.0"
   },

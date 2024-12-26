@@ -1,6 +1,7 @@
 var index = 0;
 var pastIndex = index === 0 ? 0 : index - 1;
 var statical = new EventTarget();
+var __STATICAL_dates = [];
 
 // #region Number utilities
 
@@ -78,7 +79,7 @@ function abbreviate(count, digits = 3) {
 
   return abbreviateStep1(
     abbreviateStep2(Math.floor(parseFloat(count)), digits),
-    digits,
+    digits
   );
 }
 
@@ -111,13 +112,13 @@ function updateChart(chart, newCounts, update = () => {}) {
     let axisValues = {
       xMin: Math.min(...charts[chart].lines.map((c) => c.data[0].date)),
       xMax: Math.max(
-        ...charts[chart].lines.map((c) => c.data.slice(-1)[0].date),
+        ...charts[chart].lines.map((c) => c.data.slice(-1)[0].date)
       ),
       yMin: Math.min(
-        ...charts[chart].lines.map((c) => c.data.map((cc) => cc.count)).flat(),
+        ...charts[chart].lines.map((c) => c.data.map((cc) => cc.count)).flat()
       ),
       yMax: Math.max(
-        ...charts[chart].lines.map((c) => c.data.map((cc) => cc.count)).flat(),
+        ...charts[chart].lines.map((c) => c.data.map((cc) => cc.count)).flat()
       ),
     };
 
@@ -131,7 +132,7 @@ function updateChart(chart, newCounts, update = () => {}) {
         .tickFormat((d) => {
           return abbreviate(d);
         })
-        .ticks(5),
+        .ticks(5)
     );
 
     for (let i = 0; i < charts[chart].lines.length; i++) {
@@ -147,7 +148,7 @@ function updateChart(chart, newCounts, update = () => {}) {
             .y(function (d) {
               return charts[chart].y.scale(d.count);
             })
-            .curve(d3.curveMonotoneX),
+            .curve(d3.curveMonotoneX)
         )
         .style("opacity", charts[chart].lines[i].style?.opacity ?? 1);
 
@@ -179,7 +180,7 @@ function updateChart(chart, newCounts, update = () => {}) {
         .tickFormat((d) => {
           return abbreviate(d);
         })
-        .ticks(5),
+        .ticks(5)
     );
 
     let lineData = charts[chart].lines.data;
@@ -195,7 +196,7 @@ function updateChart(chart, newCounts, update = () => {}) {
           .y(function (d) {
             return charts[chart].y.scale(d.count);
           })
-          .curve(d3.curveMonotoneX),
+          .curve(d3.curveMonotoneX)
       )
       .style("opacity", charts[chart].lines.style?.opacity ?? 1);
 
@@ -251,7 +252,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const chartKeys = Object.keys(charts).filter(
-    (key) => typeof charts[key] === "object",
+    (key) => typeof charts[key] === "object"
   );
   for (let i = 0; i < chartKeys.length; i++) {
     const key = chartKeys[i];
@@ -262,18 +263,18 @@ document.addEventListener("DOMContentLoaded", () => {
         "width",
         charts[key].style.width +
           charts[key].style.marginLeft +
-          charts[key].style.marginRight,
+          charts[key].style.marginRight
       )
       .attr(
         "height",
         charts[key].style.height +
           charts[key].style.marginTop +
-          charts[key].style.marginBottom,
+          charts[key].style.marginBottom
       )
       .append("g")
       .attr(
         "transform",
-        `translate(${charts[key].style.marginLeft},${charts[key].style.marginTop})`,
+        `translate(${charts[key].style.marginLeft},${charts[key].style.marginTop})`
       );
     charts[key].x = {
       scale: {},
@@ -350,20 +351,30 @@ document.addEventListener("DOMContentLoaded", () => {
     statical.dispatchEvent(
       new CustomEvent("create-chart", {
         detail: { chart: key },
-      }),
+      })
     );
   }
+
+  __STATICAL_dates = dates.map((d) => {
+    if (typeof d === "number") return d;
+    else if (typeof d === "string") return new Date(d).getTime();
+    else if (d instanceof Date) return d.getTime();
+  });
 
   if (!document.getElementById("date-value")) {
     const dateValue = document.createElement("p");
     dateValue.id = "date-value";
     dateValue.style.display = "none";
-    dateValue.textContent = dates[index].toLocaleString();
+    dateValue.textContent = __STATICAL_dates[index].toLocaleString();
     document.body.appendChild(dateValue);
   }
 
   function staticalUpdate() {
-    animateValue("date-value", dates[pastIndex], dates[index]);
+    animateValue(
+      "date-value",
+      __STATICAL_dates[pastIndex],
+      __STATICAL_dates[index]
+    );
     update();
   }
 

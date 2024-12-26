@@ -4,7 +4,10 @@ A high-level stats video framework built on top of [D3.js](https://d3js.org).
 
 ## Videos made with Statical
 
-[![Cocomelon VS SET India: The Race For 2ND Most Subscribed Company Channel](https://github.com/user-attachments/assets/fe3fb175-d907-4849-9c30-d0b08262b43a)](https://www.youtube.com/watch?v=Y3zxw7INPc8)
+[!["Cocomelon VS SET India: The Race For 2ND Most Subscribed Company Channel" by JipStats](https://github.com/user-attachments/assets/fe3fb175-d907-4849-9c30-d0b08262b43a)](https://www.youtube.com/watch?v=Y3zxw7INPc8)
+
+[!["Every Channel with Over 100M Subscribers Visualized" by MinMax](https://github.com/user-attachments/assets/773f0e3b-b999-4547-9415-42611a22243d)](https://www.youtube.com/watch?v=rnIyZvWI630)
+
 
 ## Usage
 

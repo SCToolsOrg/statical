@@ -49,6 +49,8 @@ declare global {
     [key in keyof T]: T[key] extends Chart ? T[key] : never;
   };
 
+  var statical: EventTarget;
+
   var dates: number[];
   var DPMS: number;
   var index: number;
@@ -80,7 +82,7 @@ declare global {
       prefix?: string;
       suffix?: string;
       duration?: number;
-    },
+    }
   ): void;
 
   /**
@@ -100,7 +102,7 @@ declare global {
   function updateChart(
     chart: Charts<typeof charts>,
     newCounts: number | number[],
-    update?: (chart: Charts<typeof charts>, index: number) => void,
+    update?: (chart: Charts<typeof charts>, index: number) => void
   ): void;
 
   /**
@@ -113,7 +115,7 @@ declare global {
   function calculateBarWidth(
     count: number,
     firstCount: number,
-    maxWidth: number,
+    maxWidth: number
   ): number;
 
   /**

@@ -256,6 +256,11 @@ document.addEventListener("DOMContentLoaded", () => {
   );
   for (let i = 0; i < chartKeys.length; i++) {
     const key = chartKeys[i];
+    charts[key].style.marginTop ??= 0;
+    charts[key].style.marginBottom ??= 0;
+    charts[key].style.marginLeft ??= 0;
+    charts[key].style.marginRight ??= 0;
+
     charts[key].chart = d3
       .select("#" + toId(key))
       .append("svg")

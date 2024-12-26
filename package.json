@@ -1,7 +1,7 @@
 {
   "name": "@sctools/statical",
   "description": "A high-level stats video framework built on top of D3.js.",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "browser": "./statical.js",
   "unpkg": "./statical.js",
   "types": "./statical.d.ts",

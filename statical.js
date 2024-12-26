@@ -1,5 +1,6 @@
 var index = 0;
 var pastIndex = index === 0 ? 0 : index - 1;
+var statical = new EventTarget();
 
 // #region Number utilities
 
@@ -77,7 +78,7 @@ function abbreviate(count, digits = 3) {
 
   return abbreviateStep1(
     abbreviateStep2(Math.floor(parseFloat(count)), digits),
-    digits
+    digits,
   );
 }
 
@@ -89,8 +90,9 @@ function abbreviate(count, digits = 3) {
  * Updates a chart's lines and avatars
  * @param {string} chart The chart to update
  * @param {number | number[]} newCounts The new counts to add to the chart
+ * @param {((chart: string, index) => void | undefined)} update The function to call to update additional things, such as avatars
  */
-function updateChart(chart, newCounts) {
+function updateChart(chart, newCounts, update = () => {}) {
   if (
     Array.isArray(charts[chart].lines) &&
     Array.isArray(newCounts) &&
@@ -109,13 +111,13 @@ function updateChart(chart, newCounts) {
     let axisValues = {
       xMin: Math.min(...charts[chart].lines.map((c) => c.data[0].date)),
       xMax: Math.max(
-        ...charts[chart].lines.map((c) => c.data.slice(-1)[0].date)
+        ...charts[chart].lines.map((c) => c.data.slice(-1)[0].date),
       ),
       yMin: Math.min(
-        ...charts[chart].lines.map((c) => c.data.map((cc) => cc.count)).flat()
+        ...charts[chart].lines.map((c) => c.data.map((cc) => cc.count)).flat(),
       ),
       yMax: Math.max(
-        ...charts[chart].lines.map((c) => c.data.map((cc) => cc.count)).flat()
+        ...charts[chart].lines.map((c) => c.data.map((cc) => cc.count)).flat(),
       ),
     };
 
@@ -129,7 +131,7 @@ function updateChart(chart, newCounts) {
         .tickFormat((d) => {
           return abbreviate(d);
         })
-        .ticks(5)
+        .ticks(5),
     );
 
     for (let i = 0; i < charts[chart].lines.length; i++) {
@@ -145,23 +147,11 @@ function updateChart(chart, newCounts) {
             .y(function (d) {
               return charts[chart].y.scale(d.count);
             })
-            .curve(d3.curveMonotoneX)
+            .curve(d3.curveMonotoneX),
         )
         .style("opacity", charts[chart].lines[i].style?.opacity ?? 1);
 
-      if (charts[chart].avatars && charts[chart].avatarSize) {
-        charts[chart].avatars[i].base.attr(
-          "transform",
-          "translate(" +
-            (charts[chart].style.width - 10) +
-            "," +
-            (charts[chart].y.scale(
-              charts[chart].lines[i].data.slice(-1)[0].count
-            ) -
-              10) +
-            ")"
-        );
-      }
+      update(chart, i);
     }
   } else {
     charts[chart].lines.data.push({
@@ -189,7 +179,7 @@ function updateChart(chart, newCounts) {
         .tickFormat((d) => {
           return abbreviate(d);
         })
-        .ticks(5)
+        .ticks(5),
     );
 
     let lineData = charts[chart].lines.data;
@@ -205,21 +195,11 @@ function updateChart(chart, newCounts) {
           .y(function (d) {
             return charts[chart].y.scale(d.count);
           })
-          .curve(d3.curveMonotoneX)
+          .curve(d3.curveMonotoneX),
       )
       .style("opacity", charts[chart].lines.style?.opacity ?? 1);
 
-    if (charts[chart].avatars && charts[chart].avatarSize) {
-      charts[chart].avatars.base.attr(
-        "transform",
-        "translate(" +
-          (charts[chart].style.width - 10) +
-          "," +
-          (charts[chart].y.scale(charts[chart].lines.data.slice(-1)[0].count) -
-            10) +
-          ")"
-      );
-    }
+    update(chart, 0);
   }
 }
 
@@ -261,7 +241,7 @@ function changeText(element, text) {
 
 // #endregion
 
-document.addEventListener("DOMContentLoaded", (w) => {
+document.addEventListener("DOMContentLoaded", () => {
   function toId(str) {
     return str.replace(/([A-Z])/g, "-$1").toLowerCase();
   }
@@ -271,7 +251,7 @@ document.addEventListener("DOMContentLoaded", (w) => {
   }
 
   const chartKeys = Object.keys(charts).filter(
-    (key) => typeof charts[key] === "object"
+    (key) => typeof charts[key] === "object",
   );
   for (let i = 0; i < chartKeys.length; i++) {
     const key = chartKeys[i];
@@ -282,18 +262,18 @@ document.addEventListener("DOMContentLoaded", (w) => {
         "width",
         charts[key].style.width +
           charts[key].style.marginLeft +
-          charts[key].style.marginRight
+          charts[key].style.marginRight,
       )
       .attr(
         "height",
         charts[key].style.height +
           charts[key].style.marginTop +
-          charts[key].style.marginBottom
+          charts[key].style.marginBottom,
       )
       .append("g")
       .attr(
         "transform",
-        `translate(${charts[key].style.marginLeft},${charts[key].style.marginTop})`
+        `translate(${charts[key].style.marginLeft},${charts[key].style.marginTop})`,
       );
     charts[key].x = {
       scale: {},
@@ -359,71 +339,6 @@ document.addEventListener("DOMContentLoaded", (w) => {
         .style("opacity", charts[key].lines.opacity);
     }
 
-    if (charts[key].avatars && charts[key].avatarSize) {
-      if (Array.isArray(charts[key].avatars)) {
-        for (let j = 0; j < charts[key].avatars.length; j++) {
-          charts[key].avatars[j] = {
-            base: {},
-            group: {},
-            type: "circle",
-            ...charts[key].avatars[j],
-          };
-          charts[key].avatars[j].group = charts[key].chart
-            .append("g")
-            .attr(
-              "transform",
-              "translate(" +
-                (charts[key].style.width - charts[key].avatarSize) +
-                "," +
-                (charts[key].style.height - charts[key].avatarSize) +
-                ")"
-            )
-            .attr("y", 100);
-
-          charts[key].avatars[j].base = charts[key].chart
-            .append("image")
-            .attr("xlink:href", charts[key].avatars[j].url)
-            .attr("width", charts[key].avatarSize)
-            .attr("height", charts[key].avatarSize);
-
-          if (charts[key].avatars[j].type === "circle") {
-            charts[key].avatars[j].base.attr(
-              "clip-path",
-              `url(#circleClip${i})`
-            );
-          }
-        }
-      } else {
-        charts[key].avatars = {
-          base: {},
-          group: {},
-          type: "circle",
-          ...charts[key].avatars,
-        };
-        charts[key].avatars.group = charts[key].chart
-          .append("g")
-          .attr(
-            "transform",
-            "translate(" +
-              (charts[key].style.width - charts[key].avatarSize) +
-              "," +
-              (charts[key].style.height - charts[key].avatarSize) +
-              ")"
-          )
-          .attr("y", 100);
-
-        charts[key].avatars.base = charts[key].chart
-          .append("image")
-          .attr("xlink:href", charts[key].avatars.url)
-          .attr("width", charts[key].avatarSize)
-          .attr("height", charts[key].avatarSize);
-
-        if (charts[key].avatars.type === "circle") {
-          charts[key].avatars.base.attr("clip-path", `url(#circleClip${i})`);
-        }
-      }
-    }
-
     charts[key].chart
       .append("clipPath")
       .attr("id", `clip${i}`)
@@ -432,23 +347,11 @@ document.addEventListener("DOMContentLoaded", (w) => {
       .attr("height", charts[key].style.height)
       .attr("fill", "blue");
 
-    const shouldClipAvatars =
-      charts[key].avatars && charts[key].avatarSize
-        ? Array.isArray(charts[key].avatars)
-          ? charts[key].avatars.length > 0 &&
-            charts[key].avatars.find((a) => a.type === "circle")
-          : charts[key].avatars.type === "circle"
-        : false;
-    if (shouldClipAvatars) {
-      charts[key].chart
-        .append("defs")
-        .append("clipPath")
-        .attr("id", `circleClip${i}`)
-        .append("circle")
-        .attr("cx", charts[key].avatarSize / 2)
-        .attr("cy", charts[key].avatarSize / 2)
-        .attr("r", charts[key].avatarSize / 2);
-    }
+    statical.dispatchEvent(
+      new CustomEvent("create-chart", {
+        detail: { chart: key },
+      }),
+    );
   }
 
   if (!document.getElementById("date-value")) {

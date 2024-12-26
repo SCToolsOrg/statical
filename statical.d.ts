@@ -30,8 +30,7 @@ declare global {
       };
     };
     lines: Line | Line[];
-    avatars?: Avatar | Avatar[];
-    avatarSize?: number;
+    [key: string]: any;
   }
   interface Line {
     base?: Selection<SVGPathElement, any, null, undefined>;
@@ -44,12 +43,6 @@ declare global {
       strokeWidth?: number;
       opacity?: number;
     };
-  }
-  interface Avatar {
-    base?: Selection<SVGImageElement, any, null, undefined>;
-    group?: Selection<SVGGElement, any, null, undefined>;
-    type?: "circle" | "square";
-    url: string;
   }
   type ValueType = (value: number, element: HTMLElement) => string;
   type Charts<T> = keyof {
@@ -87,7 +80,7 @@ declare global {
       prefix?: string;
       suffix?: string;
       duration?: number;
-    }
+    },
   ): void;
 
   /**
@@ -106,7 +99,8 @@ declare global {
    */
   function updateChart(
     chart: Charts<typeof charts>,
-    newCounts: number | number[]
+    newCounts: number | number[],
+    update?: (chart: Charts<typeof charts>, index: number) => void,
   ): void;
 
   /**
@@ -119,7 +113,7 @@ declare global {
   function calculateBarWidth(
     count: number,
     firstCount: number,
-    maxWidth: number
+    maxWidth: number,
   ): number;
 
   /**

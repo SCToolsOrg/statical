@@ -66,6 +66,7 @@ const config: Config = {
         ],
       },
     ],
+    "@cmfcmf/docusaurus-search-local",
   ],
 
   themeConfig: {

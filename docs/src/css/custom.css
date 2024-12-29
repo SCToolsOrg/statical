@@ -25,3 +25,7 @@
   background-color: #242526;
   color: white;
 }
+
+.aa-Autocomplete button {
+  padding-right: 12px;
+}

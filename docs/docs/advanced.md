@@ -1,6 +1,6 @@
 # Advanced Usage
 
-Do you want to add more content to your graphs? Maybe you want to show names next to the lines? Maybe avatars? You cal do all of that with Statical and custom update logic.
+Do you want to add more content to your graphs? Maybe you want to show names next to the lines? Maybe avatars? You can do all of that with Statical and custom update logic.
 
 ## `create-chart` event
 

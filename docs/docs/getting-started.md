@@ -12,6 +12,10 @@ You can also [view this example on GitHub](https://github.com/SCToolsOrg/statica
 
 You can install Statical by using npm:
 
+```bash npm2yarn
+npm install @sctools/statical
+```
+
 Or use a CDN such as [unpkg](https://unpkg.com):
 
 ```js

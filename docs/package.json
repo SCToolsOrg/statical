@@ -1,6 +1,5 @@
 {
-  "name": "statical",
-  "version": "0.0.0",
+  "name": "@statical/docs",
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",

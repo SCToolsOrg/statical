@@ -1,6 +1,7 @@
 import { themes as prismThemes } from "prism-react-renderer";
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
+import path from "node:path";
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
@@ -40,11 +41,30 @@ const config: Config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl: "https://github.com/SCToolsOrg/statical/tree/main/docs/",
+          remarkPlugins: [
+            [require("@docusaurus/remark-plugin-npm2yarn"), { sync: true }],
+          ],
         },
         theme: {
           customCss: "./src/css/custom.css",
         },
       } satisfies Preset.Options,
+    ],
+  ],
+
+  plugins: [
+    [
+      "docusaurus-plugin-typedoc-api",
+      {
+        projectRoot: path.join(__dirname, ".."),
+        gitRefName: "main",
+        packages: [
+          {
+            path: ".",
+            entry: "statical.d.ts",
+          },
+        ],
+      },
     ],
   ],
 
@@ -59,6 +79,11 @@ const config: Config = {
           sidebarId: "tutorialSidebar",
           position: "left",
           label: "Docs",
+        },
+        {
+          to: "api",
+          label: "API",
+          position: "left",
         },
         {
           href: "https://github.com/SCToolsOrg/statical",

@@ -1,3 +1,5 @@
 pnpm-lock.yaml
 .gitignore
 example.html
+docs
+tsconfig.json

@@ -98,6 +98,7 @@ declare global {
    * Updates a chart's lines and avatars
    * @param {string} chart The chart to update
    * @param {number | number[]} newCounts The new counts to add to the chart
+   * @param {((chart: string, index) => void | undefined)} update The function to call to update additional content, such as avatars
    */
   function updateChart(
     chart: Charts<typeof charts>,

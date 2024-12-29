@@ -15,3 +15,13 @@
 [data-theme="dark"] {
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+
+.footer {
+  background-color: #ffffff;
+  color: black;
+}
+
+[data-theme="dark"] .footer {
+  background-color: #242526;
+  color: white;
+}

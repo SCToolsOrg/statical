@@ -95,7 +95,7 @@ const config: Config = {
     footer: {
       style: "dark",
       links: [],
-      copyright: `Copyright © ${new Date().getFullYear()} SCTools. Documentation built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} SCTools, Inc. Documentation built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.github,

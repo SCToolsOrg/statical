@@ -88,4 +88,4 @@ Then use it in HTML:
 
 ## Why did we make Statical?
 
-Because we thought that making high-quality stats videos with D3.js was too complicated, involving a lot of code that you have to copy and paste a bunch of times. With Statical, we put the best practices used by many creators such as [JipStats](https://youtube.com/@JipStats), [GNZGUY](https://youtube.com/@GNZGUY) and [MinMax](https://youtube.com/@MinMaxStats) in a simple and easy-to-use package, whilst still giving you the option to make the video your own.
+Because we thought that making high-quality stats videos with D3.js was too complicated, involving a lot of code that you have to copy and paste a bunch of times. With Statical, we put the best practices used by many creators such as [JipStats](https://youtube.com/@JipStats), [GNZGUY](https://youtube.com/@GNZGUY), [MinMax](https://youtube.com/@MinMaxStats) and [Communitrics](https://youtube.com/@Communitrics) in a simple and easy-to-use package, whilst still giving you the option to make the video your own.

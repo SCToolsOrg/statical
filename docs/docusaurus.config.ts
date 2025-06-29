@@ -1,7 +1,7 @@
-import { themes as prismThemes } from "prism-react-renderer";
-import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
+import type { Config } from "@docusaurus/types";
 import path from "node:path";
+import { themes as prismThemes } from "prism-react-renderer";
 import socials from "./socials";
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
@@ -73,6 +73,10 @@ const config: Config = {
   themeConfig: {
     // Replace with your project's social card
     navbar: {
+      logo: {
+        src: "img/statical.png",
+        alt: "Statical Logo",
+      },
       title: "Statical by SCTools",
       items: [
         {
